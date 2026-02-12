@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../controllers/auth_controller.dart';
 import '../../../core/theme/app_colors.dart';
+import 'account_screen.dart';
 import 'alerts_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -83,7 +84,13 @@ class SettingsScreen extends StatelessWidget {
                           _SettingsTile(
                             icon: Icons.person_outline,
                             title: 'Compte',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const AccountScreen(),
+                                ),
+                              );
+                            },
                           ),
                           _divider(),
                           _SettingsTile(

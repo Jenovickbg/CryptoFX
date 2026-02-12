@@ -52,6 +52,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+      // Succès : revenir à la route racine pour laisser l'app afficher MainShell.
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
 
@@ -66,6 +68,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+    } else {
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
 

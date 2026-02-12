@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -77,6 +78,69 @@ class AuthController extends ChangeNotifier {
 
   Future<void> signOut() async {
     await _auth.signOut();
+  }
+
+  Future<String?> updateDisplayName(String name) async {
+    _loading = true;
+    notifyListeners();
+    try {
+      await _auth.updateDisplayName(name.trim());
+      _user = _auth.currentUser;
+      notifyListeners();
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.message ?? 'Erreur lors de la mise à jour du nom';
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Met à jour la photo de profil (bytes issus de la galerie).
+  /// N'utilise pas _loading pour éviter les spinners sur les boutons.
+  Future<String?> updatePhotoFromBytes(Uint8List bytes) async {
+    try {
+      await _auth.updatePhotoFromBytes(bytes);
+      _user = _auth.currentUser;
+      notifyListeners();
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.message ?? 'Erreur photo';
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future<String?> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    _loading = true;
+    notifyListeners();
+    try {
+      await _auth.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+      return null;
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'weak-password':
+          return 'Mot de passe trop faible';
+        case 'wrong-password':
+        case 'invalid-credential':
+          return 'Ancien mot de passe incorrect';
+        case 'requires-recent-login':
+          return 'Veuillez vous reconnecter puis réessayer.';
+        default:
+          return e.message ?? 'Erreur lors du changement de mot de passe';
+      }
+    } catch (e) {
+      return e.toString();
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
   }
 
   String? _messageForCode(String code) {

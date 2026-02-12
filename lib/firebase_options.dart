@@ -48,7 +48,8 @@ class DefaultFirebaseOptions {
     appId: '1:276114206636:ios:76c94cb006b7cf02685409',
     messagingSenderId: '276114206636',
     projectId: 'cryptofx-4921b',
-    storageBucket: 'cryptofx-4921b.firebasestorage.app',
+    // Le bucket Storage est toujours au format *.appspot.com
+    storageBucket: 'cryptofx-4921b.appspot.com',
     iosBundleId: 'com.example.cryptofx',
   );
 
@@ -57,7 +58,7 @@ class DefaultFirebaseOptions {
     appId: '1:276114206636:ios:76c94cb006b7cf02685409',
     messagingSenderId: '276114206636',
     projectId: 'cryptofx-4921b',
-    storageBucket: 'cryptofx-4921b.firebasestorage.app',
+    storageBucket: 'cryptofx-4921b.appspot.com',
     iosBundleId: 'com.example.cryptofx',
   );
 
@@ -68,7 +69,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '276114206636',
     projectId: 'cryptofx-4921b',
     authDomain: 'cryptofx-4921b.firebaseapp.com',
-    storageBucket: 'cryptofx-4921b.firebasestorage.app',
+    storageBucket: 'cryptofx-4921b.appspot.com',
     measurementId: 'G-B2FTFY0EXC',
   );
 
@@ -78,7 +79,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '276114206636',
     projectId: 'cryptofx-4921b',
     authDomain: 'cryptofx-4921b.firebaseapp.com',
-    storageBucket: 'cryptofx-4921b.firebasestorage.app',
+    storageBucket: 'cryptofx-4921b.appspot.com',
     measurementId: 'G-B2FTFY0EXC',
   );
 }

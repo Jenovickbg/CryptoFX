@@ -41,6 +41,10 @@ class _LoginScreenState extends State<LoginScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+    } else {
+      // Succès : revenir à la route racine.
+      // Le Consumer<AuthController> dans main.dart affichera MainShell.
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
 
@@ -55,6 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+    } else {
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
 
