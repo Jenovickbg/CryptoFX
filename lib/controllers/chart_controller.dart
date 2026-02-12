@@ -42,6 +42,7 @@ class ChartController extends ChangeNotifier {
   bool get loading => _loading;
 
   String _coinId = 'bitcoin';
+  String get coinId => _coinId;
 
   Future<void> loadChart({String? coinId}) async {
     if (coinId != null) _coinId = coinId;
@@ -68,6 +69,12 @@ class ChartController extends ChangeNotifier {
       _loading = false;
       notifyListeners();
     }
+  }
+
+  void setCoin(String coinId) {
+    if (_coinId == coinId) return;
+    _coinId = coinId;
+    loadChart();
   }
 
   void setPeriod(ChartPeriod p) {

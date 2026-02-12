@@ -13,6 +13,14 @@ class AnalyticsScreen extends StatefulWidget {
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
+  String _selectedSymbol = 'BTC';
+
+  static const Map<String, String> _symbolToCoinId = {
+    'BTC': 'bitcoin',
+    'ETH': 'ethereum',
+    'USDT': 'tether',
+  };
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +60,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
+                    // Sélecteur de période
                     Consumer<ChartController>(
                       builder: (context, chart, _) {
                         return Container(
@@ -96,6 +105,39 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         );
                       },
                     ),
+                    const SizedBox(height: 16),
+                    // Sélecteur de paire (BTC, ETH, USDT vs USD)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Paire à analyser',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        DropdownButton<String>(
+                          value: _selectedSymbol,
+                          dropdownColor: AppColors.card,
+                          underline: const SizedBox.shrink(),
+                          items: _symbolToCoinId.keys
+                              .map(
+                                (sym) => DropdownMenuItem<String>(
+                                  value: sym,
+                                  child: Text(sym),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            if (value == null) return;
+                            setState(() => _selectedSymbol = value);
+                            final coinId = _symbolToCoinId[value]!;
+                            context.read<ChartController>().setCoin(coinId);
+                          },
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 24),
                     Container(
                       width: double.infinity,
@@ -118,7 +160,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                '(BTC / USD)',
+                                '($_selectedSymbol / USD)',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: AppColors.textTertiary,

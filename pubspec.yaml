@@ -57,6 +57,10 @@ dependencies:
   # Notifications push
   firebase_messaging: ^15.1.5
 
+  # Ouvrir liens et partager (actualités)
+  url_launcher: ^6.3.1
+  share_plus: ^10.1.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'controllers/alerts_controller.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/chart_controller.dart';
+import 'controllers/news_controller.dart';
 import 'controllers/rates_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
@@ -44,6 +45,7 @@ class CryptoFxApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RatesController()..loadRates()),
         ChangeNotifierProvider(create: (_) => AlertsController()),
         ChangeNotifierProvider(create: (_) => ChartController()),
+        ChangeNotifierProvider(create: (_) => NewsController()),
       ],
       child: MaterialApp(
         title: 'CryptoFx',
