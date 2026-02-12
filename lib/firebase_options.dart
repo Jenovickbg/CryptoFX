@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -62,6 +59,17 @@ class DefaultFirebaseOptions {
     projectId: 'cryptofx-4921b',
     storageBucket: 'cryptofx-4921b.firebasestorage.app',
     iosBundleId: 'com.example.cryptofx',
+  );
+
+  /// Config Web (Chrome, Edge) — même projet que Windows.
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBMqBkmf9u-oF2XglgTcShFq11yeKVVuEM',
+    appId: '1:276114206636:web:4df6d1a0b7296a61685409',
+    messagingSenderId: '276114206636',
+    projectId: 'cryptofx-4921b',
+    authDomain: 'cryptofx-4921b.firebaseapp.com',
+    storageBucket: 'cryptofx-4921b.firebasestorage.app',
+    measurementId: 'G-B2FTFY0EXC',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

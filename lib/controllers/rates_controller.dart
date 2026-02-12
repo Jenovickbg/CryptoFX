@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/crypto_market_item.dart';
 import '../services/rates_service.dart';
 
 class RatesController extends ChangeNotifier {
@@ -13,10 +14,12 @@ class RatesController extends ChangeNotifier {
 
   Map<String, double> _cryptoPrices = {};
   Map<String, double> _cryptoChange24h = {};
+  List<CryptoMarketItem> _cryptoMarkets = [];
   double? _usdToCdf;
 
   Map<String, double> get cryptoPrices => Map.unmodifiable(_cryptoPrices);
   Map<String, double> get cryptoChange24h => Map.unmodifiable(_cryptoChange24h);
+  List<CryptoMarketItem> get cryptoMarkets => List.unmodifiable(_cryptoMarkets);
   double? get usdToCdf => _usdToCdf;
 
   /// Charge les taux pour l'accueil et la liste crypto.
@@ -28,8 +31,23 @@ class RatesController extends ChangeNotifier {
     try {
       await Future.wait([
         _loadCrypto(),
+        _loadCryptoMarkets(),
         _loadUsdCdf(),
       ]);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Charge uniquement la liste des cryptos (écran Crypto).
+  Future<void> loadCryptoMarkets() async {
+    _loading = true;
+    notifyListeners();
+    try {
+      _cryptoMarkets = await _ratesService.getCryptoMarkets(perPage: 80);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -41,6 +59,10 @@ class RatesController extends ChangeNotifier {
   Future<void> _loadCrypto() async {
     _cryptoPrices = await _ratesService.getCryptoPricesInUsd();
     _cryptoChange24h = await _ratesService.getCryptoChangePercent24h();
+  }
+
+  Future<void> _loadCryptoMarkets() async {
+    _cryptoMarkets = await _ratesService.getCryptoMarkets(perPage: 80);
   }
 
   Future<void> _loadUsdCdf() async {

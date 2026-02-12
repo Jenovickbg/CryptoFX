@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../controllers/auth_controller.dart';
 import '../../../core/theme/app_colors.dart';
+import '../widgets/app_logo.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -76,6 +77,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        centerTitle: true,
+        title: const AppLogoIcon(size: 36),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -85,7 +88,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
+                const Center(child: AppLogo(height: 72)),
+                const SizedBox(height: 20),
                 Text(
                   'Créer un compte',
                   style: TextStyle(

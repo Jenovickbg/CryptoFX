@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../controllers/auth_controller.dart';
 import '../../../core/theme/app_colors.dart';
+import '../widgets/app_logo.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -68,16 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 48),
-                Text(
-                  'CryptoFx',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 32),
+                const Center(child: AppLogo(height: 80)),
+                const SizedBox(height: 24),
                 Text(
                   'Connexion',
                   style: TextStyle(
@@ -85,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,

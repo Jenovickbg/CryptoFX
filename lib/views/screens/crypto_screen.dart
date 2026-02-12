@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../../controllers/rates_controller.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../models/crypto_market_item.dart';
+import '../widgets/app_logo.dart';
 
 class CryptoScreen extends StatefulWidget {
   const CryptoScreen({super.key});
@@ -26,59 +28,90 @@ class _CryptoScreenState extends State<CryptoScreen> {
       body: SafeArea(
         child: Consumer<RatesController>(
           builder: (context, rates, _) {
-            if (rates.loading && rates.cryptoPrices.isEmpty) {
+            if (rates.loading && rates.cryptoMarkets.isEmpty) {
               return const Center(
                 child: CircularProgressIndicator(color: AppColors.primary),
               );
             }
-            final list = ['BTC', 'ETH', 'USDT'];
+            final list = rates.cryptoMarkets;
+            if (list.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Aucune donnée',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton.icon(
+                      onPressed: () => rates.loadCryptoMarkets(),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Réessayer'),
+                    ),
+                  ],
+                ),
+              );
+            }
             return CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        const Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text(
+                            AppLogoIcon(size: 32),
+                            SizedBox(width: 10),
+                            Text(
                               'Crypto',
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
                               ),
                             ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.notifications_outlined),
-                              color: AppColors.textPrimary,
-                            ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        ...list.map(
-                          (symbol) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _CryptoCard(
-                              symbol: symbol,
-                              name: symbol == 'BTC'
-                                  ? 'Bitcoin'
-                                  : symbol == 'ETH'
-                                      ? 'Ethereum'
-                                      : 'Tether',
-                              price: rates.formatCryptoPrice(symbol),
-                              change: rates.formatChange24h(symbol),
-                              isUp: rates.isCryptoUp(symbol),
-                            ),
-                          ),
+                        IconButton(
+                          onPressed: () => rates.loadCryptoMarkets(),
+                          icon: const Icon(Icons.refresh),
+                          color: AppColors.textPrimary,
+                          tooltip: 'Actualiser',
                         ),
                       ],
                     ),
                   ),
                 ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      '${list.length} cryptomonnaies • classement par capitalisation',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final item = list[index];
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                        child: _CryptoCard(item: item),
+                      );
+                    },
+                    childCount: list.length,
+                  ),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
               ],
             );
           },
@@ -89,40 +122,31 @@ class _CryptoScreenState extends State<CryptoScreen> {
 }
 
 class _CryptoCard extends StatelessWidget {
-  final String symbol;
-  final String name;
-  final String price;
-  final String change;
-  final bool isUp;
+  final CryptoMarketItem item;
 
-  const _CryptoCard({
-    required this.symbol,
-    required this.name,
-    required this.price,
-    required this.change,
-    required this.isUp,
-  });
+  const _CryptoCard({required this.item});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: AppColors.primary.withOpacity(0.2),
-            child: Text(
-              symbol.substring(0, 1),
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: item.imageUrl != null && item.imageUrl!.isNotEmpty
+                ? Image.network(
+                    item.imageUrl!,
+                    width: 44,
+                    height: 44,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _avatarFallback(),
+                  )
+                : _avatarFallback(),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -130,14 +154,17 @@ class _CryptoCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  item.name,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
+                    fontSize: 15,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  symbol,
+                  item.symbol,
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12,
@@ -150,22 +177,45 @@ class _CryptoCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                price,
+                item.priceFormatted,
                 style: const TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w600,
+                  fontSize: 14,
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
-                change,
+                item.changeFormatted,
                 style: TextStyle(
-                  color: isUp ? AppColors.up : AppColors.down,
+                  color: item.isUp ? AppColors.up : AppColors.down,
                   fontSize: 12,
                 ),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _avatarFallback() {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Text(
+          item.symbol.length >= 1 ? item.symbol.substring(0, 1) : '?',
+          style: const TextStyle(
+            color: AppColors.primary,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
       ),
     );
   }

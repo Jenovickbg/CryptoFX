@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../widgets/app_logo.dart';
 import 'login_screen.dart';
 
 /// Première page : onboarding / accueil avec logo, titre, sous-titre et CTA.
@@ -31,8 +32,7 @@ class WelcomeScreen extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 48),
-                // Logo en haut
-                _LogoSection(),
+                const Center(child: AppLogo(height: 140, showFallbackHint: true)),
                 const Spacer(),
                 // Titre
                 const Text(
@@ -93,56 +93,6 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _LogoSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Image.asset(
-        'assets/images/logo.png',
-        height: 140,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => _LogoFallback(),
-      ),
-    );
-  }
-}
-
-/// Si le fichier logo.png est absent, on affiche le nom en style logo.
-class _LogoFallback extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          decoration: BoxDecoration(
-            color: AppColors.card,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Text(
-            'CryptoFx',
-            style: TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Collez logo.png dans assets/images/',
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textTertiary,
-          ),
-        ),
-      ],
     );
   }
 }

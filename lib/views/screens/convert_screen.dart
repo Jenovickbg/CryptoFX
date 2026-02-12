@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../controllers/rates_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/currency.dart';
+import '../widgets/app_logo.dart';
 
 class ConvertScreen extends StatefulWidget {
   const ConvertScreen({super.key});
@@ -65,7 +66,15 @@ class _ConvertScreenState extends State<ConvertScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Convertir'),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AppLogoIcon(size: 28),
+            SizedBox(width: 10),
+            Text('Convertir'),
+          ],
+        ),
         centerTitle: true,
       ),
       body: SafeArea(

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../models/crypto_market_item.dart';
+
 /// Consommation API REST : taux fiat (Frankfurter) + crypto (CoinGecko).
 class RatesService {
   static const _frankfurterBase = 'https://api.frankfurter.app';
@@ -89,6 +91,36 @@ class RatesService {
 
   Map<String, double> _fallbackCrypto() =>
       {'BTC': 60000.0, 'ETH': 3000.0, 'USDT': 1.0};
+
+  /// Liste de nombreuses cryptos (CoinGecko /coins/markets).
+  /// [perPage] max 250 par page.
+  Future<List<CryptoMarketItem>> getCryptoMarkets({int perPage = 50}) async {
+    try {
+      final uri = Uri.parse(
+        '$_coingeckoBase/coins/markets?vs_currency=usd&order=market_cap_desc'
+        '&per_page=$perPage&page=1&sparkline=false',
+      );
+      final response = await _client.get(uri).timeout(
+        const Duration(seconds: 15),
+      );
+      if (response.statusCode != 200) return [];
+      final list = jsonDecode(response.body) as List<dynamic>?;
+      if (list == null) return [];
+      return list.map((e) {
+        final m = e as Map<String, dynamic>;
+        return CryptoMarketItem(
+          id: m['id'] as String? ?? '',
+          symbol: ((m['symbol'] as String?) ?? '').toUpperCase(),
+          name: m['name'] as String? ?? '',
+          priceUsd: (m['current_price'] as num?)?.toDouble() ?? 0,
+          changePercent24h: (m['price_change_percentage_24h'] as num?)?.toDouble(),
+          imageUrl: m['image'] as String?,
+        );
+      }).toList();
+    } catch (_) {
+      return [];
+    }
+  }
 
   /// Variation 24h en % (CoinGecko).
   Future<Map<String, double>> getCryptoChangePercent24h() async {
