@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 
 /// Authentification Firebase : Email/Mot de passe + Google.
@@ -36,18 +37,28 @@ class AuthService {
   }
 
   /// Connexion avec Google
+  ///
+  /// - Web : Firebase Auth + popup Google.
+  /// - Mobile/Desktop : plugin google_sign_in.
   Future<User?> signInWithGoogle() async {
-    final googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) return null;
+    if (kIsWeb) {
+      // Web : utilise directement le provider Google de Firebase Auth.
+      final provider = GoogleAuthProvider();
+      final cred = await _auth.signInWithPopup(provider);
+      return cred.user;
+    } else {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null;
 
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-    final cred = await _auth.signInWithCredential(credential);
-    return cred.user;
+      final cred = await _auth.signInWithCredential(credential);
+      return cred.user;
+    }
   }
 
   /// Met à jour le nom d'affichage (Firebase Auth + Firestore).

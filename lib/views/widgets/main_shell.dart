@@ -50,65 +50,76 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: const [
-          HomeScreen(),
-          AnalyticsScreen(),
-          SizedBox.shrink(), // FAB n'a pas d'écran direct
-          CryptoScreen(),
-          SettingsScreen(),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    return WillPopScope(
+      onWillPop: () async {
+        // Si on n'est pas sur l'onglet Accueil, revenir à l'accueil
+        if (_currentIndex != 0) {
+          setState(() => _currentIndex = 0);
+          return false;
+        }
+        // Sinon, laisser le système gérer (fermer l'app / revenir à l'écran précédent)
+        return true;
+      },
+      child: Scaffold(
+        body: IndexedStack(
+          index: _currentIndex,
+          children: const [
+            HomeScreen(),
+            AnalyticsScreen(),
+            SizedBox.shrink(), // FAB n'a pas d'écran direct
+            CryptoScreen(),
+            SettingsScreen(),
+          ],
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(5, (index) {
-                final item = _navItems[index];
-                final isCenter = index == 2;
-                final isSelected = _currentIndex == index && !isCenter;
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(5, (index) {
+                  final item = _navItems[index];
+                  final isCenter = index == 2;
+                  final isSelected = _currentIndex == index && !isCenter;
 
-                if (isCenter) {
-                  return _FABNavItem(
-                    icon: item.activeIcon,
+                  if (isCenter) {
+                    return _FABNavItem(
+                      icon: item.activeIcon,
+                      onTap: () => _onTap(index),
+                    );
+                  }
+
+                  return InkWell(
                     onTap: () => _onTap(index),
-                  );
-                }
-
-                return InkWell(
-                  onTap: () => _onTap(index),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          isSelected ? item.activeIcon : item.icon,
-                          color: isSelected ? AppColors.primary : AppColors.textTertiary,
-                          size: 24,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item.label,
-                          style: TextStyle(
-                            fontSize: 11,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isSelected ? item.activeIcon : item.icon,
                             color: isSelected ? AppColors.primary : AppColors.textTertiary,
+                            size: 24,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 4),
+                          Text(
+                            item.label,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isSelected ? AppColors.primary : AppColors.textTertiary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ),
           ),
         ),
