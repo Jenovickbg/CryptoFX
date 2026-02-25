@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('Se connecter'),
+                            : const Text('se connecter'),
                       ),
                     );
                   },
