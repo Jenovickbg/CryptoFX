@@ -17,7 +17,7 @@ class RatesService {
     if (from == to) return 1.0;
 
     // CDF : taux indicatif (API gratuite sans CDF)
-    const double usdToCdf = 2250.0;
+    const double usdToCdf = 2200.0;
     if (from == 'CDF' && to == 'USD') return 1 / usdToCdf;
     if (from == 'USD' && to == 'CDF') return usdToCdf;
     if (from == 'CDF' && to == 'EUR') return (1 / usdToCdf) * await _eurPerUsd();
